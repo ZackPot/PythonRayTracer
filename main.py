@@ -2,6 +2,8 @@ import numpy as np
 import math
 import tkinter as tk
 from tqdm import tqdm
+from itertools import combinations
+
 
 pyramid = np.array([
     [0, 0, 0],
@@ -58,5 +60,9 @@ for x, y, _ in tqdm(render_vectors):
     screen_y = (y - min_y) * scale + margin
     flat_points.extend([screen_x, screen_y])
 
-canvas.create_line(*flat_points, fill="blue", width=3)
+pts = list(zip(flat_points[0::2], flat_points[1::2]))
+
+for p1, p2 in combinations(pts, 2):
+    canvas.create_line(p1, p2, fill='red')
+
 root.mainloop()
