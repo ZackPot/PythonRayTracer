@@ -4,6 +4,27 @@ import tkinter as tk
 from tqdm import tqdm
 from itertools import combinations
 
+def get_rotation_matrix(A, B):
+    A = A / np.linalg.norm(A)
+    B = B / np.linalg.norm(B)
+
+    v = np.linalg.cross(A, B)
+    s = np.linalg.norm(v)
+    c = np.dot(A, B)
+    print(f's: {s}; c: {c}; v: {v}')
+
+    vx = np.array([[0, -v[2], v[1]],
+                   [v[2], 0, -v[0]],
+                   [-v[1], v[0], 0]])
+
+    if math.isclose(c, 1.0, rel_tol=1e-3):
+        return np.eye(3)
+    elif math.isclose(c, -1.0, rel_tol=1e-3):
+        return -np.eye(3)
+    else:
+        rotation_matrix = np.eye(3) + vx + (vx @ vx) * (1 / (1 + c))
+        rotation_matrix = np.eye(3)
+        return rotation_matrix
 
 pyramid = np.array([
     [0, 0, 0],
@@ -32,6 +53,13 @@ for point in pyramid:
     render_vectors = np.append(render_vectors, vector)
 
 render_vectors = render_vectors.reshape((render_vectors.shape[0] // 3, 3))
+
+A = np.array([camera_plane[0, 0] - camera_plane[3, 0], camera_plane[0, 1] - camera_plane[3, 1],
+              camera_plane[0, 2] - camera_plane[3, 2]])
+b = np.array([1, 0, 0])
+
+rotation = get_rotation_matrix(A, b)
+render_vectors = np.dot(render_vectors, rotation)
 
 for vector in render_vectors:
     scale = (viewing_point[2] - height_of_camera) / vector[2]
