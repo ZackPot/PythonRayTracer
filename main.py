@@ -17,13 +17,12 @@ def get_rotation_matrix(A, B):
                    [v[2], 0, -v[0]],
                    [-v[1], v[0], 0]])
 
-    if math.isclose(c, 1.0, rel_tol=1e-3):
+    if math.isclose(c, 1.0, rel_tol=1e-9):
         return np.eye(3)
-    elif math.isclose(c, -1.0, rel_tol=1e-3):
+    elif math.isclose(c, -1.0, rel_tol=1e-9):
         return -np.eye(3)
     else:
         rotation_matrix = np.eye(3) + vx + (vx @ vx) * (1 / (1 + c))
-        rotation_matrix = np.eye(3)
         return rotation_matrix
 
 pyramid = np.array([
@@ -41,7 +40,7 @@ height_of_camera = 3 # z of camera plane
 opposite = height_of_camera * math.tanh(viewing_angle) # y of camera plane
 camera_width = 2 # x of camera plane
 
-camera_plane = np.array([[0.5 - camera_width / 2, 0.5 - opposite, viewing_point[2] - height_of_camera],
+camera_plane = np.array([[0.5 - camera_width / 2, 0.5 - opposite, viewing_point[2] - height_of_camera + 5],
                          [0.5 - camera_width / 2, 0.5 + opposite, viewing_point[2] - height_of_camera],
                          [0.5 + camera_width / 2, 0.5 + opposite, viewing_point[2] - height_of_camera],
                          [0.5 + camera_width / 2, 0.5 - opposite, viewing_point[2] - height_of_camera]])
@@ -54,15 +53,17 @@ for point in pyramid:
 
 render_vectors = render_vectors.reshape((render_vectors.shape[0] // 3, 3))
 
-A = np.array([camera_plane[0, 0] - camera_plane[3, 0], camera_plane[0, 1] - camera_plane[3, 1],
+b = np.array([camera_plane[0, 0] - camera_plane[3, 0], camera_plane[0, 1] - camera_plane[3, 1],
               camera_plane[0, 2] - camera_plane[3, 2]])
-b = np.array([1, 0, 0])
+A = np.array([1, 0, 0])
 
 rotation = get_rotation_matrix(A, b)
+print(rotation)
 render_vectors = np.dot(render_vectors, rotation)
 
 for vector in render_vectors:
-    scale = (viewing_point[2] - height_of_camera) / vector[2]
+    scale = np.dot(camera_plane, rotation)[1, 2]  / vector[2]
+    print(scale)
     vector *= scale
 print('Vectors assembeled...')
 
