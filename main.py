@@ -4,6 +4,20 @@ import tkinter as tk
 from tqdm import tqdm
 from itertools import combinations
 
+def generate_edge_list(shape):
+    euclidean_distance = lambda x1, y1, z1, x2, y2, z2: math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2 + (z2 - z1) ** 2)
+    point_distances = {} # dict {point data: [list of 3 closest points]}
+    for point in shape:
+        distances = []
+        for point2 in shape:
+            distances.append(euclidean_distance(point[0], point[1], point[2], point2[0], point2[1], point2[2]))
+
+        distances.sort()
+        three_closest = [distances[1], distances[2], distances[3]]
+        point_distances[point] = three_closest
+
+    return point_distances
+
 def get_rotation_matrix(A, B):
     A = A / np.linalg.norm(A)
     B = B / np.linalg.norm(B)
@@ -78,7 +92,7 @@ pyramid = np.array([
     [0.5, 0.5, 1]
 ])
 
-viewing_point = np.array([0.5, 0.5, 10])
+viewing_point = np.array([0.5+5, 0.5+5, 10])
 
 viewing_angle = 60 # angle
 height_of_camera = 3 # z of camera plane
