@@ -4,27 +4,30 @@ import tkinter as tk
 from tqdm import tqdm
 from itertools import combinations
 
+# constants
+angle = 0
+
+# functions
 def search_from_distance(distance, point, shape):
     euclidean_distance = lambda x1, y1, z1, x2, y2, z2: math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2 + (z2 - z1) ** 2)
     for pt in shape:
-        distance = euclidean_distance(point[0], point[1], point[2], pt[0], pt[1], pt[2])
-        if distance == distance:
+        calc_distance = euclidean_distance(point[0], point[1], point[2], pt[0], pt[1], pt[2])
+        if calc_distance == distance:
             return pt
 
+
 def generate_edge_list(shape):
-    euclidean_distance = lambda x1, y1, z1, x2, y2, z2: math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2 + (z2 - z1) ** 2)
-    point_distances = {} # dict {point data: [list of 3 closest points]}
-    for point in shape:
+    edge_map = {}
+    for i, point in enumerate(shape):
         distances = []
-        for point2 in shape:
-            distances.append(euclidean_distance(point[0], point[1], point[2], point2[0], point2[1], point2[2]))
+        for j, point2 in enumerate(shape):
+            if i == j: continue
+            dist = np.linalg.norm(point - point2)
+            distances.append((dist, j))
 
         distances.sort()
-        four_closest = [distances[1], distances[2], distances[3], distances[4]]
-
-        point_distances[tuple(point)] = four_closest
-
-    return point_distances
+        edge_map[i] = [d[1] for d in distances[:4]]
+    return edge_map
 
 def get_rotation_matrix(A, B):
     A = A / np.linalg.norm(A)
@@ -103,7 +106,7 @@ def draw(render_vectors, canvas, canvas_w, canvas_h, margin, edge_list, scale, s
 
         closest_indices = []
         for cp in close_points:
-            matches = np.where(np.all(pyramid == cp, axis=1))[0]
+            matches = np.where(np.all(shape == cp, axis=1))[0]
             closest_indices.extend(matches)
 
         print(pts)
@@ -111,8 +114,30 @@ def draw(render_vectors, canvas, canvas_w, canvas_h, margin, edge_list, scale, s
         closest_pts = pts[closest_indices]
 
         for close_pt in closest_pts:
-            canvas.create_line(pts[1][0], pts[1][1], close_pt[0], close_pt[1], fill="red")
+            canvas.create_line(point[1][0], point[1][1], close_pt[0], close_pt[1], fill="red")
 
+
+def animate():
+    global angle, pyramid
+    angle += 0.05
+
+    c, s = np.cos(0.05), np.sin(0.05)
+    rotation_y = np.array([
+        [c, 0, s],
+        [0, 1, 0],
+        [-s, 0, c]
+    ])
+
+    center = np.mean(pyramid, axis=0)
+    pyramid = (pyramid - center) @ rotation_y + center
+
+    canvas.delete("all")
+    current_render, current_scale = render(pyramid, camera_plane, viewing_point)
+    draw(current_render, canvas, 400, 400, 50, edge_list, current_scale, pyramid)
+
+    root.after(16, animate)
+
+# main
 
 pyramid = np.array([
     [0, 0, 0],
@@ -142,4 +167,5 @@ canvas = tk.Canvas(root, width=400, height=400)
 canvas.pack()
 
 draw(render_vectors, canvas, 400, 400, 20, edge_list, scale, pyramid)
+animate()
 root.mainloop()
