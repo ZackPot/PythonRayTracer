@@ -1,4 +1,4 @@
-This renderer is an open-source raytacing and perspective (for visualization) rendering codebase.
+This renderer is an open-source raytracing and perspective (for visualization) rendering codebase.
 It is built for rendering simple scenes
 The project is not meant to be used for game engin.es or real time purpouses.
 It uses a lot of numpy, combined with tkinter to display it as a window.
