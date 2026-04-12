@@ -83,39 +83,17 @@ def draw(render_vectors, canvas, canvas_w, canvas_h, margin, edge_list, scale, s
     data_h = max_y - min_y if max_y != min_y else 1
     scale = min((canvas_w - 2 * margin) / data_w, (canvas_h - 2 * margin) / data_h)
 
-    flat_points = []
-    for x, y, _ in tqdm(render_vectors):
+    pts = []
+    for x, y, _ in render_vectors:
         screen_x = (x - min_x) * scale + margin
         screen_y = (y - min_y) * scale + margin
-        flat_points.extend([screen_x, screen_y])
+        pts.append((screen_x, screen_y))
 
-    pts = list(zip(flat_points[0::2], flat_points[1::2]))
-    scaled_render_vectors = np.round(render_vectors / scale, decimals = 1)
-
-    print(edge_list)
-
-    for point in enumerate(pts):
-        og_point = shape[point[0]]
-        closest = edge_list[tuple(float(v) for v in og_point)]
-        print(closest)
-
-        close_points = []
-        for distance in closest:
-            close_points.append(search_from_distance(distance, og_point, shape))
-        close_points = np.array(close_points)
-
-        closest_indices = []
-        for cp in close_points:
-            matches = np.where(np.all(shape == cp, axis=1))[0]
-            closest_indices.extend(matches)
-
-        print(pts)
-        pts = np.array(pts)
-        closest_pts = pts[closest_indices]
-
-        for close_pt in closest_pts:
-            canvas.create_line(point[1][0], point[1][1], close_pt[0], close_pt[1], fill="red")
-
+    for i, screen_pt in enumerate(pts):
+        neighbor_indices = edge_list[i]
+        for n_idx in neighbor_indices:
+            neighbor_pt = pts[n_idx]
+            canvas.create_line(screen_pt[0], screen_pt[1], neighbor_pt[0], neighbor_pt[1], fill="red")
 
 def animate():
     global angle, pyramid
