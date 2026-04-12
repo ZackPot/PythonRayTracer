@@ -1,0 +1,121 @@
+<component name="InspectionProjectProfileManager">
+  <profile version="1.0">
+    <option name="myName" value="Project Default" />
+    <inspection_tool class="PyPackageRequirementsInspection" enabled="false" level="WARNING" enabled_by_default="false">
+      <option name="ignoredPackages">
+        <list>
+          <option value="annotated-doc" />
+          <option value="annotated-types" />
+          <option value="anyio" />
+          <option value="attrs" />
+          <option value="bcrypt" />
+          <option value="build" />
+          <option value="certifi" />
+          <option value="charset-normalizer" />
+          <option value="chromadb" />
+          <option value="click" />
+          <option value="durationpy" />
+          <option value="filelock" />
+          <option value="flatbuffers" />
+          <option value="fsspec" />
+          <option value="googleapis-common-protos" />
+          <option value="grpcio" />
+          <option value="h11" />
+          <option value="hf-xet" />
+          <option value="httpcore" />
+          <option value="httptools" />
+          <option value="httpx" />
+          <option value="huggingface_hub" />
+          <option value="idna" />
+          <option value="importlib_metadata" />
+          <option value="importlib_resources" />
+          <option value="Jinja2" />
+          <option value="jsonpatch" />
+          <option value="jsonpointer" />
+          <option value="jsonschema" />
+          <option value="jsonschema-specifications" />
+          <option value="kubernetes" />
+          <option value="langchain-chroma" />
+          <option value="langchain-core" />
+          <option value="langchain-text-splitters" />
+          <option value="langsmith" />
+          <option value="markdown-it-py" />
+          <option value="MarkupSafe" />
+          <option value="mdurl" />
+          <option value="mmh3" />
+          <option value="mpmath" />
+          <option value="networkx" />
+          <option value="numpy" />
+          <option value="oauthlib" />
+          <option value="onnxruntime" />
+          <option value="opentelemetry-api" />
+          <option value="opentelemetry-exporter-otlp-proto-common" />
+          <option value="opentelemetry-exporter-otlp-proto-grpc" />
+          <option value="opentelemetry-proto" />
+          <option value="opentelemetry-sdk" />
+          <option value="opentelemetry-semantic-conventions" />
+          <option value="orjson" />
+          <option value="overrides" />
+          <option value="packaging" />
+          <option value="protobuf" />
+          <option value="pybase64" />
+          <option value="pydantic" />
+          <option value="pydantic-settings" />
+          <option value="pydantic_core" />
+          <option value="Pygments" />
+          <option value="PyPika" />
+          <option value="pyproject_hooks" />
+          <option value="python-dateutil" />
+          <option value="python-dotenv" />
+          <option value="PyYAML" />
+          <option value="referencing" />
+          <option value="regex" />
+          <option value="requests" />
+          <option value="requests-oauthlib" />
+          <option value="requests-toolbelt" />
+          <option value="rich" />
+          <option value="rpds-py" />
+          <option value="safetensors" />
+          <option value="sentencepiece" />
+          <option value="shellingham" />
+          <option value="six" />
+          <option value="sympy" />
+          <option value="tenacity" />
+          <option value="tokenizers" />
+          <option value="torch" />
+          <option value="tqdm" />
+          <option value="transformers" />
+          <option value="typer" />
+          <option value="typing-inspection" />
+          <option value="typing_extensions" />
+          <option value="urllib3" />
+          <option value="uuid_utils" />
+          <option value="uvicorn" />
+          <option value="uvloop" />
+          <option value="watchfiles" />
+          <option value="websocket-client" />
+          <option value="websockets" />
+          <option value="xxhash" />
+          <option value="zipp" />
+          <option value="zstandard" />
+        </list>
+      </option>
+    </inspection_tool>
+    <inspection_tool class="PyStubPackagesAdvertiser" enabled="true" level="WARNING" enabled_by_default="true">
+      <option name="ignoredPackages">
+        <list>
+          <option value="pandas" />
+          <option value="scipy" />
+        </list>
+      </option>
+    </inspection_tool>
+    <inspection_tool class="PyTypeCheckerInspection" enabled="false" level="WARNING" enabled_by_default="false" />
+    <inspection_tool class="PyUnresolvedReferencesInspection" enabled="true" level="WARNING" enabled_by_default="true">
+      <option name="ignoredIdentifiers">
+        <list>
+          <option value="object.*" />
+        </list>
+      </option>
+    </inspection_tool>
+  </profile>
+</component>
