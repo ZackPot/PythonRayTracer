@@ -5,6 +5,7 @@ from tqdm import tqdm
 
 # constants
 angle = 0
+barrier = 10
 
 # functions
 def search_from_distance(distance, point, shape):
@@ -71,26 +72,29 @@ def render(points, camera_plane, viewing_point):
 
 
 def draw(render_vectors, canvas, canvas_w, canvas_h, margin, edge_list, scale, shape):
-    x_coords = render_vectors[:, 0]
-    y_coords = render_vectors[:, 1]
-    min_x, max_x = np.min(x_coords), np.max(x_coords)
-    min_y, max_y = np.min(y_coords), np.max(y_coords)
+    if np.mean(viewing_point - np.mean(shape, axis = (0, 1))) > barrier:
+        pass
+    else:
+        x_coords = render_vectors[:, 0]
+        y_coords = render_vectors[:, 1]
+        min_x, max_x = np.min(x_coords), np.max(x_coords)
+        min_y, max_y = np.min(y_coords), np.max(y_coords)
 
-    data_w = max_x - min_x if max_x != min_x else 1
-    data_h = max_y - min_y if max_y != min_y else 1
-    scale = min((canvas_w - 2 * margin) / data_w, (canvas_h - 2 * margin) / data_h)
+        data_w = max_x - min_x if max_x != min_x else 1
+        data_h = max_y - min_y if max_y != min_y else 1
+        scale = min((canvas_w - 2 * margin) / data_w, (canvas_h - 2 * margin) / data_h)
 
-    pts = []
-    for x, y, _ in render_vectors:
-        screen_x = (x - min_x) * scale + margin
-        screen_y = (y - min_y) * scale + margin
-        pts.append((screen_x, screen_y))
+        pts = []
+        for x, y, _ in render_vectors:
+            screen_x = (x - min_x) * scale + margin
+            screen_y = (y - min_y) * scale + margin
+            pts.append((screen_x, screen_y))
 
-    for i, screen_pt in enumerate(pts):
-        neighbor_indices = edge_list[i]
-        for n_idx in neighbor_indices:
-            neighbor_pt = pts[n_idx]
-            canvas.create_line(screen_pt[0], screen_pt[1], neighbor_pt[0], neighbor_pt[1], fill="red")
+        for i, screen_pt in enumerate(pts):
+            neighbor_indices = edge_list[i]
+            for n_idx in neighbor_indices:
+                neighbor_pt = pts[n_idx]
+                canvas.create_line(screen_pt[0], screen_pt[1], neighbor_pt[0], neighbor_pt[1], fill="red")
 
 
 def update_camera_plane(target_pos):
