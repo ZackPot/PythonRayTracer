@@ -2,7 +2,6 @@ import numpy as np
 import math
 import tkinter as tk
 from tqdm import tqdm
-from itertools import combinations
 
 # constants
 angle = 0
@@ -36,7 +35,6 @@ def get_rotation_matrix(A, B):
     v = np.linalg.cross(A, B)
     s = np.linalg.norm(v)
     c = np.dot(A, B)
-    print(f's: {s}; c: {c}; v: {v}')
 
     vx = np.array([[0, -v[2], v[1]],
                    [v[2], 0, -v[0]],
@@ -64,7 +62,6 @@ def render(points, camera_plane, viewing_point):
     A = np.array([1, 0, 0])
 
     rotation = get_rotation_matrix(A, b)
-    print(rotation)
     render_vectors = np.dot(render_vectors, rotation)
 
     for vector in render_vectors:
@@ -95,21 +92,42 @@ def draw(render_vectors, canvas, canvas_w, canvas_h, margin, edge_list, scale, s
             neighbor_pt = pts[n_idx]
             canvas.create_line(screen_pt[0], screen_pt[1], neighbor_pt[0], neighbor_pt[1], fill="red")
 
-def animate():
-    global angle, pyramid
-    angle += 0.05
 
-    c, s = np.cos(0.05), np.sin(0.05)
-    rotation_y = np.array([
-        [c, 0, s],
-        [0, 1, 0],
-        [-s, 0, c]
+def update_camera_plane(target_pos):
+    forward = target_pos - viewing_point
+    forward = forward / np.linalg.norm(forward)
+
+    plane_center = viewing_point + (forward * 2)
+
+    return np.array([
+        plane_center + [-1, -1, 0],  # Top Left
+        plane_center + [-1, 1, 0],  # Bottom Left
+        plane_center + [1, 1, 0],  # Bottom Right
+        plane_center + [1, -1, 0]  # Top Right
     ])
 
-    center = np.mean(pyramid, axis=0)
-    pyramid = (pyramid - center) @ rotation_y + center
+def key_handler(event):
+    print(event.char)
+    if event.char == 'a':
+        viewing_point[0] += 1
+    elif event.char == 'd':
+        viewing_point[0] -= 1
+    elif event.char == 'w':
+        viewing_point[1] += 1
+    elif event.char == 's':
+        viewing_point[1] -= 1
+    elif event.char == 'q':
+        viewing_point[2] -= 1
+    elif event.char == 'e':
+        viewing_point[2] += 1
+    else:
+        pass
+
+def animate():
+    global angle, pyramid, camera_plane, viewing_point
 
     canvas.delete("all")
+    camera_plane = update_camera_plane(np.mean(pyramid, axis=(0, 1)))
     current_render, current_scale = render(pyramid, camera_plane, viewing_point)
     draw(current_render, canvas, 400, 400, 50, edge_list, current_scale, pyramid)
 
@@ -145,5 +163,6 @@ canvas = tk.Canvas(root, width=400, height=400)
 canvas.pack()
 
 draw(render_vectors, canvas, 400, 400, 20, edge_list, scale, pyramid)
+root.bind("<Key>", key_handler)
 animate()
 root.mainloop()
