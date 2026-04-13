@@ -112,13 +112,13 @@ def key_handler(event):
         viewing_point[0] += 1
     elif event.char == 'd':
         viewing_point[0] -= 1
-    elif event.char == 'w':
-        viewing_point[1] += 1
     elif event.char == 's':
+        viewing_point[1] += 1
+    elif event.char == 'w':
         viewing_point[1] -= 1
-    elif event.char == 'q':
-        viewing_point[2] -= 1
     elif event.char == 'e':
+        viewing_point[2] -= 1
+    elif event.char == 'q':
         viewing_point[2] += 1
     else:
         pass
@@ -161,6 +161,15 @@ render_vectors, scale = render(pyramid, camera_plane, viewing_point)
 root = tk.Tk()
 canvas = tk.Canvas(root, width=400, height=400)
 canvas.pack()
+
+controls = tk.Text(root, width=400, height=50)
+
+control_text = """W - Forwards, S - Backwards
+A - Right, D - Left
+Q - Up, E - Down"""
+
+controls.insert(tk.END, control_text)
+controls.pack()
 
 draw(render_vectors, canvas, 400, 400, 20, edge_list, scale, pyramid)
 root.bind("<Key>", key_handler)
