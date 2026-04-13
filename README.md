@@ -1,11 +1,26 @@
-This renderer is an open-source raytracing and perspective (for visualization) rendering codebase.
-It is built for rendering simple scenes
-The project is not meant to be used for game engin.es or real time purpouses.
-It uses a lot of numpy, combined with tkinter to display it as a window.
+# Open Source Raytracer and Perspective Renderer Suite
 
-There are (or will be) 3 files; perspective.py, raytracer.py and main.py.
-perspective.py contains the perspective rendering code, which should be used for visualization.
-raytracer.py contains the raytracer code, which should be used for rendering.
-main.py combines both rendering techniques to create a tkinter app with high-speed visualization and rendering.
+This project seeks to make a open-source bare-bones 3D rendering engine for people interested in simple rendering. It contains two files, one for the perspective renderer and the raytracer.
 
-There will soon be a .pdf file attached with the equations necassary to understand the inner workings of the project.
+
+## Features
+
+- TKinter canvas and window for display
+- Custom physics engine built off numpy
+- Basic Wireframe perspective renderer
+
+
+## Authors
+
+- [@zacharypotishko](https://www.github.com/ZackPot)
+
+
+## License
+
+[MIT](https://choosealicense.com/licenses/mit/)
+
+
+## Acknowledgements
+
+ - [Readme.so](https://readme.so/)
+ - Numpy
