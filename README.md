@@ -24,3 +24,7 @@ This project seeks to make a open-source bare-bones 3D rendering engine for peop
 
  - [Readme.so](https://readme.so/)
  - Numpy
+
+## Demo
+
+![Demo](./demo.jpg) 
