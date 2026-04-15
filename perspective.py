@@ -1,21 +1,13 @@
 import numpy as np
 import math
 import tkinter as tk
-from tqdm import tqdm
 
 # constants
 angle = 0
 barrier = 10
+scale = 0
 
 # functions
-def search_from_distance(distance, point, shape):
-    euclidean_distance = lambda x1, y1, z1, x2, y2, z2: math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2 + (z2 - z1) ** 2)
-    for pt in shape:
-        calc_distance = euclidean_distance(point[0], point[1], point[2], pt[0], pt[1], pt[2])
-        if calc_distance == distance:
-            return pt
-
-
 def generate_edge_list(shape):
     edge_map = {}
     for i, point in enumerate(shape):
