@@ -35,8 +35,9 @@ class Ray:
             edge1 = face.vertices[1] - face.vertices[0]
             edge2 = face.vertices[2] - face.vertices[0]
             fnormal = np.linalg.cross(edge1, edge2)
-            weight1 = 2
-            weight2 = 5
+
+            if np.dot(fnormal, direction) > 0:
+                fnormal = -fnormal
             a = face.vertices[0]
 
             if np.round(np.dot(fnormal, direction), 2) == 0:
@@ -137,7 +138,7 @@ class Camera:
         plt.colorbar(label='Brightness')
 
 camera = Camera(np.array([4, 4, 4]))
-camera.update_camera_plane(np.array([0.5, 0.5, 0.5]), res=500)
+camera.update_camera_plane(np.array([0.5, 0.5, 0.5]), res=100, size=10)
 
 pyramid_faces = []
 
@@ -154,12 +155,12 @@ v6 = [1, 1, 1]
 v7 = [0, 1, 1]
 
 cube_faces = [
-    Face(np.array([v0, v1, v2])), Face(np.array([v0, v2, v3])),
-    Face(np.array([v4, v5, v6])), Face(np.array([v4, v6, v7])),
     Face(np.array([v0, v1, v5])), Face(np.array([v0, v5, v4])),
-    Face(np.array([v3, v2, v6])), Face(np.array([v3, v6, v7])),
-    Face(np.array([v0, v3, v7])), Face(np.array([v0, v7, v4])),
-    Face(np.array([v1, v2, v6])), Face(np.array([v1, v6, v5]))
+    Face(np.array([v1, v2, v6])), Face(np.array([v1, v6, v5])),
+    Face(np.array([v2, v3, v7])), Face(np.array([v2, v7, v6])),
+    Face(np.array([v3, v0, v4])), Face(np.array([v3, v4, v7])),
+    Face(np.array([v4, v5, v6])), Face(np.array([v4, v6, v7])),
+    Face(np.array([v0, v3, v2])), Face(np.array([v0, v2, v1]))
 ]
 
 cube = Shape(cube_faces)
