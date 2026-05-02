@@ -1,9 +1,86 @@
 import numpy as np
+import math
+import matplotlib.pyplot as plt
+
+def calc_euclid_dist(p1, p2):
+    return math.sqrt((p1[0] - p2[0]) ** 2 + (p1[1] - p2[1]) ** 2 + (p1[2] - p2[2]) ** 2)
+
+class Light:
+    def __init__(self, position: np.typing.NDArray, intensity: np.typing.NDArray):
+        self.position = position
+        self.intensity = intensity
+
+class Face:
+    def __init__(self, vertices: np.typing.NDArray):
+        self.vertices = vertices
+
+class Shape:
+    def __init__(self, faces: np.typing.NDArray):
+        self.faces = faces
+
+class Ray:
+    def __init__(self, origin: np.typing.NDArray, direction: np.typing.NDArray):
+        self.brightness = 0
+        self.origin = origin
+        self.direction = direction
+
+    @staticmethod
+    def detect_collision(shape_faces, direction, origin):
+        for face in shape_faces:
+            edge1 = face.vertices[1] - face.vertices[0]
+            edge2 = face.vertices[2] - face.vertices[0]
+            normal = np.linalg.cross(edge1, edge2)
+            weight1 = 2
+            weight2 = 5
+            a = (face.vertices[0] + weight1 * (face.vertices[1] - face.vertices[0]) + weight2
+                 * (face.vertices[2] - face.vertices[0]))
+
+            if np.round(np.dot(normal, direction), 2) == 0:
+                return None, normal
+            else:
+                t = np.dot((a - origin), normal) / np.dot(normal, direction)
+                if t < 0:
+                    return None, normal
+                else:
+                    intersection = origin + t * direction
+                    v0 = face.vertices[1] - face.vertices[0]
+                    v1 = face.vertices[2] - face.vertices[0]
+                    v2 = intersection - face.vertices[0]
+
+                    d00 = v0 @ v0
+                    d01 = v0 @ v1
+                    d11 = v1 @ v1
+                    d20 = v2 @ v0
+                    d21 = v2 @ v1
+
+                    denominator = d00 * d11 - d01 * d01
+                    u = (d11 * d20 - d01 * d21) / denominator
+                    v = (d00 * d21 - d01 * d20) / denominator
+
+                    if u >= 0 and v >= 0 and (u + v) <= 1:
+                        return intersection, normal
+                    else:
+                        return None, normal
+        return None
+
+    def bounce(self, light, faces: np.typing.NDArray):
+        intersection_point, normal = self.detect_collision(faces, self.direction, self.origin)
+
+        if intersection_point is not None:
+            light_dir = light.position - intersection_point
+            light_dir /= np.linalg.norm(light_dir)
+            dot_product = max(0, np.dot(normal, light_dir))
+
+            light_dist = calc_euclid_dist(light.position, intersection_point)
+            self.brightness = (light.intensity * dot_product) / (4 * math.pi * light_dist ** 2)
+        else:
+            self.brightness = 0
 
 class Camera:
     def __init__(self, origin: np.typing.NDArray):
         self.origin = origin
         self.camera_plane = None
+        self.render = []
 
     def update_camera_plane(self, target_pos, size=2.0, res=10):
         target_pos = np.array([float(point) for point in target_pos])
@@ -33,79 +110,38 @@ class Camera:
         ])
 
         self.camera_plane = np.vstack((grid_points, corners))
-        print(self.camera_plane)
 
-class Face:
-    def __init__(self, vertices: np.typing.NDArray):
-        self.vertices = vertices
+    def render_img(self, faces, light):
+        for point in self.camera_plane:
+            ray = Ray(self.origin, point - self.origin)
+            ray.bounce(light, faces)
+            self.render.append(ray.brightness)
 
-class Shape:
-    def __init__(self, faces: np.typing.NDArray):
-        self.faces = faces
+        self.render = self.render[:-4]
+        res = int(math.sqrt(len(self.render)))
+        self.render = np.array(self.render).reshape(res, res)
 
-class Ray:
-    def __init__(self, brightness: int, origin: np.typing.NDArray, direction: np.typing.NDArray):
-        self.brightness = brightness
-        self.origin = origin
-        self.direction = direction
+        dy, dx = np.gradient(self.render)
+        edge_intensity = dx ** 2 + dy ** 2
+        edges = edge_intensity > 0.99
 
-    @staticmethod
-    def detect_collision(shape_faces, direction, origin):
-        for face in shape_faces:
-            edge1 = face.vertices[1] - face.vertices[0]
-            edge2 = face.vertices[2] - face.vertices[0]
-            normal = np.linalg.cross(edge1, edge2)
-            weight1 = 2
-            weight2 = 5
-            a = (face.vertices[0] + weight1 * (face.vertices[1] - face.vertices[0]) + weight2
-                 * (face.vertices[2] - face.vertices[0]))
+        self.render = np.where(edges, 1.0, camera.render)
+        plt.imshow(self.render, cmap='gray', interpolation='gaussian')
+        plt.colorbar(label='Brightness')
 
-            if np.round(np.dot(normal, direction), 2) == 0:
-                dist = np.sqrt(np.sum(direction ** 2))
-                brightness = 1 / dist ** 2
-                return brightness
-            else:
-                t = np.dot((a - origin), normal) / np.dot(normal, direction)
-                if t < 0:
-                    pass
-                else:
-                    intersection = origin + t * direction
-                    v0 = face.vertices[1] - face.vertices[0]
-                    v1 = face.vertices[2] - face.vertices[0]
-                    v2 = intersection - face.vertices[0]
-
-                    d00 = v0 @ v0
-                    d01 = v0 @ v1
-                    d11 = v1 @ v1
-                    d20 = v2 @ v0
-                    d21 = v2 @ v1
-
-                    denominator = d00 * d11 - d01 * d01
-                    u = (d11 * d20 - d01 * d21) / denominator
-                    v = (d00 * d21 - d01 * d20) / denominator
-
-                    if u >= 0 and v >= 0 and (u + v) <= 1:
-                        return 0
-                    else:
-                        dist = np.sqrt(np.sum(direction ** 2))
-                        brightness = 1 / dist ** 2
-                        return brightness
-        return 0
-
-    def bounce(self, collision_point: np.typing.NDArray, light: np.typing.NDArray, faces: np.typing.NDArray):
-        self.direction = collision_point - light
-        self.brightness = self.detect_collision(faces, self.direction, self.origin)
-
-camera = Camera(np.array([0, 0, 10]))
-camera.update_camera_plane(np.array([0, 0, 0]))
+camera = Camera(np.array([2, 2, 10]))
+camera.update_camera_plane(np.array([0, 0, 0]), res=100)
 
 pyramid_faces = []
+
+light = Light(np.array([5, 5, 5]), 10)
 
 face1 = Face(np.array([[0, 0, 0], [1, 0, 0], [0, 1, 0]]))
 face2 = Face(np.array([[0, 0, 0], [0, 0, 1], [0, 1, 0]]))
 face3 = Face(np.array([[0, 0, 0], [0, 0, 1], [1, 0, 0]]))
 face4 = Face(np.array([[0, 0, 1], [0, 1, 0], [1, 0, 0]]))
-pyramid_faces.append(np.array([face1, face2, face3, face4]))
-pyramid_faces = np.array(pyramid_faces)
+pyramid_faces = [face1, face2, face3, face4]
 
 pyramid = Shape(pyramid_faces)
+camera.render_img(pyramid.faces, light)
+plt.show()
