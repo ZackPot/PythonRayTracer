@@ -138,7 +138,7 @@ class Camera:
         plt.colorbar(label='Brightness')
 
 camera = Camera(np.array([4, 4, 4]))
-camera.update_camera_plane(np.array([0.5, 0.5, 0.5]), res=100, size=10)
+camera.update_camera_plane(np.array([0.5, 0.5, 0.5]), res=500)
 
 pyramid_faces = []
 
