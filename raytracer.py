@@ -126,28 +126,42 @@ class Camera:
         self.render = self.render[:-4]
         res = int(math.sqrt(len(self.render)))
         self.render = np.array(self.render).reshape(res, res)
+        self.render = self.render / np.max(self.render) * 0.8
 
         dy, dx = np.gradient(self.render)
         edge_intensity = dx ** 2 + dy ** 2
-        edges = edge_intensity > 0.99
+        edges = edge_intensity > 0.005
 
         self.render = np.where(edges, 1.0, self.render)
         plt.imshow(self.render, cmap='gray')
         plt.colorbar(label='Brightness')
 
-camera = Camera(np.array([2, 2, 10]))
-camera.update_camera_plane(np.array([0, 0, 0]), res=100)
+camera = Camera(np.array([4, 4, 4]))
+camera.update_camera_plane(np.array([0.5, 0.5, 0.5]), res=500)
 
 pyramid_faces = []
 
 light = Light(np.array([5, 5, 5]), 10)
 
-face1 = Face(np.array([[0, 0, 0], [1, 0, 0], [0.5, 1, 0.5]]))
-face2 = Face(np.array([[0, 0, 1], [1, 0, 1], [0.5, 1, 0.5]]))
-face3 = Face(np.array([[0, 0, 0], [0, 0, 1], [1, 0, 0]]))
-face4 = Face(np.array([[0, 0, 1], [0, 1, 0], [1, 0, 0]]))
-pyramid_faces = [face1, face2, face3, face4]
+v0 = [0, 0, 0]
+v1 = [1, 0, 0]
+v2 = [1, 0, 1]
+v3 = [0, 0, 1]
 
-pyramid = Shape(pyramid_faces)
-camera.render_img(pyramid.faces, light)
+v4 = [0, 1, 0]
+v5 = [1, 1, 0]
+v6 = [1, 1, 1]
+v7 = [0, 1, 1]
+
+cube_faces = [
+    Face(np.array([v0, v1, v2])), Face(np.array([v0, v2, v3])),
+    Face(np.array([v4, v5, v6])), Face(np.array([v4, v6, v7])),
+    Face(np.array([v0, v1, v5])), Face(np.array([v0, v5, v4])),
+    Face(np.array([v3, v2, v6])), Face(np.array([v3, v6, v7])),
+    Face(np.array([v0, v3, v7])), Face(np.array([v0, v7, v4])),
+    Face(np.array([v1, v2, v6])), Face(np.array([v1, v6, v5]))
+]
+
+cube = Shape(cube_faces)
+camera.render_img(cube.faces, light)
 plt.show()
