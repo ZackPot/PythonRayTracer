@@ -26,21 +26,25 @@ class Ray:
 
     @staticmethod
     def detect_collision(shape_faces, direction, origin):
+        fnormal = None
+        best_normal = None
+        closest_t = float('inf')
+        closest_hit = None
+
         for face in shape_faces:
             edge1 = face.vertices[1] - face.vertices[0]
             edge2 = face.vertices[2] - face.vertices[0]
-            normal = np.linalg.cross(edge1, edge2)
+            fnormal = np.linalg.cross(edge1, edge2)
             weight1 = 2
             weight2 = 5
-            a = (face.vertices[0] + weight1 * (face.vertices[1] - face.vertices[0]) + weight2
-                 * (face.vertices[2] - face.vertices[0]))
+            a = face.vertices[0]
 
-            if np.round(np.dot(normal, direction), 2) == 0:
-                return None, normal
+            if np.round(np.dot(fnormal, direction), 2) == 0:
+                pass
             else:
-                t = np.dot((a - origin), normal) / np.dot(normal, direction)
-                if t < 0:
-                    return None, normal
+                t = np.dot((a - origin), fnormal) / np.dot(fnormal, direction)
+                if t <= 0:
+                    pass
                 else:
                     intersection = origin + t * direction
                     v0 = face.vertices[1] - face.vertices[0]
@@ -58,10 +62,12 @@ class Ray:
                     v = (d00 * d21 - d01 * d20) / denominator
 
                     if u >= 0 and v >= 0 and (u + v) <= 1:
-                        return intersection, normal
-                    else:
-                        return None, normal
-        return None
+                        if t < closest_t:
+                            closest_t = t
+                            closest_hit = intersection
+                            best_normal = fnormal
+
+        return closest_hit, best_normal
 
     def bounce(self, light, faces: np.typing.NDArray):
         intersection_point, normal = self.detect_collision(faces, self.direction, self.origin)
@@ -125,8 +131,8 @@ class Camera:
         edge_intensity = dx ** 2 + dy ** 2
         edges = edge_intensity > 0.99
 
-        self.render = np.where(edges, 1.0, camera.render)
-        plt.imshow(self.render, cmap='gray', interpolation='gaussian')
+        self.render = np.where(edges, 1.0, self.render)
+        plt.imshow(self.render, cmap='gray')
         plt.colorbar(label='Brightness')
 
 camera = Camera(np.array([2, 2, 10]))
@@ -136,8 +142,8 @@ pyramid_faces = []
 
 light = Light(np.array([5, 5, 5]), 10)
 
-face1 = Face(np.array([[0, 0, 0], [1, 0, 0], [0, 1, 0]]))
-face2 = Face(np.array([[0, 0, 0], [0, 0, 1], [0, 1, 0]]))
+face1 = Face(np.array([[0, 0, 0], [1, 0, 0], [0.5, 1, 0.5]]))
+face2 = Face(np.array([[0, 0, 1], [1, 0, 1], [0.5, 1, 0.5]]))
 face3 = Face(np.array([[0, 0, 0], [0, 0, 1], [1, 0, 0]]))
 face4 = Face(np.array([[0, 0, 1], [0, 1, 0], [1, 0, 0]]))
 pyramid_faces = [face1, face2, face3, face4]
