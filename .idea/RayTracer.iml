@@ -4,7 +4,7 @@
     <content url="file://$MODULE_DIR$/../RayTracer">
       <excludeFolder url="file://$MODULE_DIR$/../RayTracer/.venv" />
     </content>
-    <orderEntry type="jdk" jdkName="Python 3.11 (RayTracer)" jdkType="Python SDK" />
+    <orderEntry type="jdk" jdkName="Python 3.11 (BiochemistryRAG)" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
   </component>
 </module>

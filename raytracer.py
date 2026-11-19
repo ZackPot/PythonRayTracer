@@ -146,21 +146,18 @@ class Camera:
         else:
             self.render = np.zeros_like(self.render)
 
-        dy, dx = np.gradient(self.render)
-        edge_intensity = np.sqrt(dx ** 2 + dy ** 2)
-        edges = edge_intensity > 0.08
+        # dy, dx = np.gradient(self.render)
+        # edge_intensity = np.sqrt(dx ** 2 + dy ** 2)
+        # edges = edge_intensity > 0.08
 
-        self.render = np.where(edges, 1.0, self.render)
+        # self.render = np.where(edges, 1.0, self.render)
         plt.imshow(self.render, cmap='gray', interpolation='lanczos')
         plt.colorbar(label='Brightness')
 
-<<<<<<< HEAD
 camera = Camera(np.array([4, 4, 4]))
 camera.update_camera_plane(np.array([0.5, 0.5, 0.5]), res=100, size=10)
-=======
 camera = Camera(np.array([5.0, -5.0, 3.0]))
 camera.update_camera_plane(np.array([0, 0, 1]), res=250, size=1)
->>>>>>> 47d4960 (Added in shadows and antialiasing for rendering. I also adjusted the test shapes.)
 
 light = Light(np.array([4.0, -4.0, 4.0]), 1000)
 
